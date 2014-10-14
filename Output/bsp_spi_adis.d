@@ -1,0 +1,16 @@
+..\..\output\bsp_spi_adis.o: ..\..\User\spi\bsp_spi_adis.c
+..\..\output\bsp_spi_adis.o: ..\..\User\spi\bsp_spi_adis.h
+..\..\output\bsp_spi_adis.o: ..\..\Libraries\CMSIS\stm32f10x.h
+..\..\output\bsp_spi_adis.o: ..\..\Libraries\CMSIS\core_cm3.h
+..\..\output\bsp_spi_adis.o: C:\Apps\Keil\ARM\ARMCC\bin\..\include\stdint.h
+..\..\output\bsp_spi_adis.o: ..\..\Libraries\CMSIS\system_stm32f10x.h
+..\..\output\bsp_spi_adis.o: ..\..\User\stm32f10x_conf.h
+..\..\output\bsp_spi_adis.o: ..\..\Libraries\FWlib\inc\stm32f10x_dma.h
+..\..\output\bsp_spi_adis.o: ..\..\Libraries\CMSIS\stm32f10x.h
+..\..\output\bsp_spi_adis.o: ..\..\Libraries\FWlib\inc\stm32f10x_exti.h
+..\..\output\bsp_spi_adis.o: ..\..\Libraries\FWlib\inc\stm32f10x_gpio.h
+..\..\output\bsp_spi_adis.o: ..\..\Libraries\FWlib\inc\stm32f10x_rcc.h
+..\..\output\bsp_spi_adis.o: ..\..\Libraries\FWlib\inc\stm32f10x_spi.h
+..\..\output\bsp_spi_adis.o: ..\..\Libraries\FWlib\inc\stm32f10x_tim.h
+..\..\output\bsp_spi_adis.o: ..\..\Libraries\FWlib\inc\stm32f10x_usart.h
+..\..\output\bsp_spi_adis.o: ..\..\Libraries\FWlib\inc\misc.h
