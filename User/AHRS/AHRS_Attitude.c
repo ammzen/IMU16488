@@ -1,6 +1,7 @@
 #include "AHRS_Attitude.h"
 #include "bsp_spi_adis.h"
 #include "bsp_usart1.h"
+#include "Kalman.h"
 #include <math.h>
 
 __IO uint16_t *p;
