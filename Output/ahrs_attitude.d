@@ -17,4 +17,5 @@
 ..\..\output\ahrs_attitude.o: ..\..\User\spi\bsp_spi_adis.h
 ..\..\output\ahrs_attitude.o: ..\..\User\usart\bsp_usart1.h
 ..\..\output\ahrs_attitude.o: C:\Apps\Keil\ARM\ARMCC\bin\..\include\stdio.h
+..\..\output\ahrs_attitude.o: ..\..\User\AHRS\Kalman.h
 ..\..\output\ahrs_attitude.o: C:\Apps\Keil\ARM\ARMCC\bin\..\include\math.h
