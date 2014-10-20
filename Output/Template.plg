@@ -4,14 +4,6 @@
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
 C:\Users\Best\Documents\GitHub\IMU16488\Project\RVMDK£¨uv4£©\iSO-STM32.uvproj
-Project File Date:  09/20/2014
+Project File Date:  10/15/2014
 
 <h2>Output:</h2>
-Build target 'ADIS-SPI'
-compiling AHRS_Attitude.c...
-..\..\User\AHRS\AHRS_Attitude.c(83): warning:  #870-D: invalid multibyte character sequence
-compiling Kalman.c...
-linking...
-Program Size: Code=32044 RO-data=1116 RW-data=240 ZI-data=6160  
-FromELF: creating hex file...
-"..\..\Output\Template.axf" - 0 Errors, 1 Warning(s).

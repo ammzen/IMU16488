@@ -356,7 +356,7 @@ I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\stm32f10x_spi.h)(
 I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
 I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
 I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\misc.h)(0x4D783BB4)
-F (..\..\User\main.c)(0x541CEDF8)(-c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork -I..\..\Libraries\CMSIS -I..\..\User -I..\..\Libraries\FWlib\inc -I..\..\User\usart -I..\..\User\spi -I..\..\User\Led -I..\..\User\TimBase -I..\..\User\AHRS-I C:\Apps\Keil\ARM\RV31\INC-I C:\Apps\Keil\ARM\CMSIS\Include-I C:\Apps\Keil\ARM\Inc\ST\STM32F10x-DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ..\..\output\main.o --omf_browse ..\..\output\main.crf --depend ..\..\output\main.d)
+F (..\..\User\main.c)(0x543F6D34)(-c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork -I..\..\Libraries\CMSIS -I..\..\User -I..\..\Libraries\FWlib\inc -I..\..\User\usart -I..\..\User\spi -I..\..\User\Led -I..\..\User\TimBase -I..\..\User\AHRS-I C:\Apps\Keil\ARM\RV31\INC-I C:\Apps\Keil\ARM\CMSIS\Include-I C:\Apps\Keil\ARM\Inc\ST\STM32F10x-DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ..\..\output\main.o --omf_browse ..\..\output\main.crf --depend ..\..\output\main.d)
 I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\CMSIS\stm32f10x.h)(0x4D783CB4)
 I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\CMSIS\core_cm3.h)(0x4D523B58)
 I (C:\Apps\Keil\ARM\ARMCC\include\stdint.h)(0x51C7B744)
@@ -473,7 +473,7 @@ I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\stm32f10x_tim.h)(
 I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
 I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\misc.h)(0x4D783BB4)
 I (C:\Users\Best\Documents\GitHub\IMU16488\User\stm32f10x_it.h)(0x53F46F26)
-F (..\..\User\AHRS\AHRS_Attitude.c)(0x541C0212)(-c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork -I..\..\Libraries\CMSIS -I..\..\User -I..\..\Libraries\FWlib\inc -I..\..\User\usart -I..\..\User\spi -I..\..\User\Led -I..\..\User\TimBase -I..\..\User\AHRS-I C:\Apps\Keil\ARM\RV31\INC-I C:\Apps\Keil\ARM\CMSIS\Include-I C:\Apps\Keil\ARM\Inc\ST\STM32F10x-DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ..\..\output\ahrs_attitude.o --omf_browse ..\..\output\ahrs_attitude.crf --depend ..\..\output\ahrs_attitude.d)
+F (..\..\User\AHRS\AHRS_Attitude.c)(0x543E776C)(-c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork -I..\..\Libraries\CMSIS -I..\..\User -I..\..\Libraries\FWlib\inc -I..\..\User\usart -I..\..\User\spi -I..\..\User\Led -I..\..\User\TimBase -I..\..\User\AHRS-I C:\Apps\Keil\ARM\RV31\INC-I C:\Apps\Keil\ARM\CMSIS\Include-I C:\Apps\Keil\ARM\Inc\ST\STM32F10x-DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ..\..\output\ahrs_attitude.o --omf_browse ..\..\output\ahrs_attitude.crf --depend ..\..\output\ahrs_attitude.d)
 I (C:\Users\Best\Documents\GitHub\IMU16488\User\AHRS\AHRS_Attitude.h)(0x541BD835)
 I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\CMSIS\stm32f10x.h)(0x4D783CB4)
 I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\CMSIS\core_cm3.h)(0x4D523B58)
@@ -491,6 +491,22 @@ I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\misc.h)(0x4D783BB
 I (C:\Users\Best\Documents\GitHub\IMU16488\User\spi\bsp_spi_adis.h)(0x53F4083A)
 I (C:\Users\Best\Documents\GitHub\IMU16488\User\usart\bsp_usart1.h)(0x53F401D6)
 I (C:\Apps\Keil\ARM\ARMCC\include\stdio.h)(0x51C7B744)
+I (C:\Users\Best\Documents\GitHub\IMU16488\User\AHRS\Kalman.h)(0x543CC331)
 I (C:\Apps\Keil\ARM\ARMCC\include\math.h)(0x51C7B744)
-F (..\..\User\AHRS\Kalman.c)(0x543CB87C)()
+F (..\..\User\AHRS\Kalman.c)(0x543CC331)(-c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork -I..\..\Libraries\CMSIS -I..\..\User -I..\..\Libraries\FWlib\inc -I..\..\User\usart -I..\..\User\spi -I..\..\User\Led -I..\..\User\TimBase -I..\..\User\AHRS-I C:\Apps\Keil\ARM\RV31\INC-I C:\Apps\Keil\ARM\CMSIS\Include-I C:\Apps\Keil\ARM\Inc\ST\STM32F10x-DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER -o ..\..\output\kalman.o --omf_browse ..\..\output\kalman.crf --depend ..\..\output\kalman.d)
+I (C:\Users\Best\Documents\GitHub\IMU16488\User\AHRS\Kalman.h)(0x543CC331)
+I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\CMSIS\stm32f10x.h)(0x4D783CB4)
+I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\CMSIS\core_cm3.h)(0x4D523B58)
+I (C:\Apps\Keil\ARM\ARMCC\include\stdint.h)(0x51C7B744)
+I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\CMSIS\system_stm32f10x.h)(0x4D783CAA)
+I (C:\Users\Best\Documents\GitHub\IMU16488\User\stm32f10x_conf.h)(0x53F405F8)
+I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (C:\Users\Best\Documents\GitHub\IMU16488\Libraries\FWlib\inc\misc.h)(0x4D783BB4)
+I (C:\Users\Best\Documents\GitHub\IMU16488\User\AHRS\AHRS_Attitude.h)(0x541BD835)
 F (..\..\Doc\readme.txt)(0x5146FE96)()
