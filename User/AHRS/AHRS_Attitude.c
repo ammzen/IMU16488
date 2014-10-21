@@ -28,6 +28,14 @@ float MXoffset = 0;
 float MYoffset = 0;
 float MZoffset = 0;
 extern __IO float Pitch, Roll, Yaw;
+
+typedef struct
+{
+	float q0;
+	float q1;
+	float q2;
+	float q3;
+}quaternion;
 //---------------------------------------------------------------------------------------------------
 // Definitions
 
@@ -76,11 +84,16 @@ void init_quaternion()
 	q3 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*sin(0.5*init_Yaw) - sin(0.5*init_Roll)*sin(0.5*init_Pitch)*cos(0.5*init_Yaw);  //z   绕z轴旋转是Yaw
 
 	init_Roll  = init_Roll * 57.295780;	 //弧度转角度
-	init_Pitch = init_Pitch * 57.295780;
+	inti_Pitch = init_Pitch * 57.295780;
 	init_Yaw   = init_Yaw * 57.295780;
 	if(init_Yaw < 0){init_Yaw = init_Yaw + 360;}      //将Yaw的范围转成0-360
 	if(init_Yaw > 360){init_Yaw = init_Yaw - 360;} 	    
 	printf("由初始化四元数得到:%9.6f,%9.6f,%9.6f,%9.6f,yaw,pitch,roll:%8.3f,%8.3f,%8.3f\n\r",q0,q1,q2,q3, init_Yaw, init_Pitch, init_Roll);
+}
+void factored_quaternion(float ax, float ay, float az, float mx, float my, float mz)
+{
+	
+	
 }
 void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz)
 {
@@ -193,11 +206,7 @@ void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float 
     
 	//printf("四元数收敛过程：Yaw=%f, Pitch=%f, Roll=%f \n\r", Yaw, Pitch, Roll);
 }
-void Init_quaternion()
-{
-    q0 = 1;
-    q1 = q2 = q3 =0;
-}
+
 /***************************************************************************************************************************************
 * Function Name  : AHRSupdate
 * Description    : accel gyro mag的融合算法，源自S.O.H. Madgwick
