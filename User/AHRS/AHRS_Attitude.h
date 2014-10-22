@@ -16,6 +16,5 @@ void GetData(void);
 void GetRawData(void);
 float GET_NOWTIME(void);
 
-float invSqrt(float x);
-quaternion quad_times(quaternion a, quaternion b);
+
 #endif

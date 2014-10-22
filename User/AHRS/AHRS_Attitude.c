@@ -2,6 +2,7 @@
 #include "bsp_spi_adis.h"
 #include "bsp_usart1.h"
 #include "Kalman.h"
+#include "QuadLib.h"
 #include <math.h>
 
 __IO uint16_t *p;
@@ -29,13 +30,6 @@ float MYoffset = 0;
 float MZoffset = 0;
 extern __IO float Pitch, Roll, Yaw;
 
-typedef struct
-{
-	float q0;
-	float q1;
-	float q2;
-	float q3;
-}quaternion;
 //---------------------------------------------------------------------------------------------------
 // Definitions
 
@@ -84,17 +78,114 @@ void init_quaternion()
 	q3 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*sin(0.5*init_Yaw) - sin(0.5*init_Roll)*sin(0.5*init_Pitch)*cos(0.5*init_Yaw);  //z   绕z轴旋转是Yaw
 
 	init_Roll  = init_Roll * 57.295780;	 //弧度转角度
-	inti_Pitch = init_Pitch * 57.295780;
+	init_Pitch = init_Pitch * 57.295780;
 	init_Yaw   = init_Yaw * 57.295780;
 	if(init_Yaw < 0){init_Yaw = init_Yaw + 360;}      //将Yaw的范围转成0-360
 	if(init_Yaw > 360){init_Yaw = init_Yaw - 360;} 	    
 	printf("由初始化四元数得到:%9.6f,%9.6f,%9.6f,%9.6f,yaw,pitch,roll:%8.3f,%8.3f,%8.3f\n\r",q0,q1,q2,q3, init_Yaw, init_Pitch, init_Roll);
+//    Yaw = init_Yaw;
+//    Pitch = init_Pitch;
+//    Roll = init_Roll;
 }
+
 void factored_quaternion(float ax, float ay, float az, float mx, float my, float mz)
 {
+	// theta->Pitch rotate by Y; phi->Roll rotate by X; psi->Yaw rotate by Z;
+	float sin_theta, cos_theta, sin_phi, cos_phi, sin_psi, cos_psi;
+	float sin_half_theta, cos_half_theta, sin_half_phi, cos_half_phi, sin_half_psi, cos_half_psi;
+	// q_e->Pitch(Elevation); q_r->Roll(Roll/Bank); q_a->Yaw(Azimuth); q_est->all three rotation
+	Quaternion q_e, q_r, q_a, q_est;
+	// mag_b->magnetic field measurement vector in the body coordinate
+	// mag_e->rotate mag_b into intermediate Earth coordinate
+	// nx ny->the known local normalized magnetic field vector
+	Quaternion mag_b, mag_e;
+	float nx, ny, Nx, Ny, Mx, My;
+    EulerAngle euler;
 	
-	
+	float recipNorm;
+	// Normalise accelerometer measurement
+	recipNorm = invSqrt(ax * ax + ay * ay + az * az);
+	ax *= recipNorm;
+	ay *= recipNorm;
+	az *= recipNorm;   
+
+	// Normalise magnetometer measurement
+	recipNorm = invSqrt(mx * mx + my * my + mz * mz);
+	mx *= recipNorm;
+	my *= recipNorm;
+	mz *= recipNorm;
+    	
+    // Convert Sensor coordinate to North-East-Down
+	az = -az;
+	mz = -mz;
+
+	// Elevation Quaternion
+	sin_theta = ax;
+	cos_theta = sqrt(1 - sin_theta*sin_theta);
+	sin_half_theta = (sin_theta >= 0 ? 1:-1) * sqrt(0.5 * (1 - cos_theta));
+	cos_half_theta = sqrt(0.5 * (1 + cos_theta));
+	q_e.q0 = cos_half_theta;
+	q_e.q1 = 0;
+	q_e.q2 = sin_half_theta;
+	q_e.q3 = 0;
+
+	// Roll Quaternion
+	if (cos_theta == 0)
+	{
+		sin_phi = 0;
+		cos_phi = 1;
+	}
+	else
+	{
+		sin_phi = -ay / cos_theta;
+		cos_phi = -az / cos_theta;
+	}
+	sin_half_phi = (sin_phi >= 0 ? 1:-1) * sqrt(0.5 * (1 - cos_phi));
+	cos_half_phi = sqrt(0.5 * (1 + cos_phi));
+	q_r.q0 = cos_half_phi;
+	q_r.q1 = sin_half_phi;
+	q_r.q2 = 0;
+	q_r.q3 = 0;
+
+	// Azimuth Quaternion
+	mag_b.q0 = 0;
+	mag_b.q1 = mx;
+	mag_b.q2 = my;
+	mag_b.q3 = mz;
+	mag_e = quad_times(quad_times(q_r, mag_b), quad_invert(q_r));
+	mag_e = quad_times(quad_times(q_e, mag_e), quad_invert(q_e));
+
+	recipNorm = invSqrt(mag_e.q1 * mag_e.q1 + mag_e.q2 * mag_e.q2);
+	Mx = mag_e.q1 * recipNorm; 
+	My = mag_e.q2 * recipNorm; 
+//	Nx = -0.1644;
+//	Ny =  0.9864;
+	Nx =  0;
+	Ny =  1;
+	cos_psi =  Mx * Nx + My * Ny;
+	sin_psi = -My * Nx + Mx * Ny;
+	sin_half_psi = (sin_psi >= 0 ? 1:-1) * sqrt(0.5 * (1 - cos_psi));
+	cos_half_psi = sqrt(0.5 * (1 + cos_psi));
+	q_a.q0 = cos_half_psi;
+	q_a.q1 = 0;
+	q_a.q2 = 0;
+	q_a.q3 = sin_half_psi;
+
+	// Three rotations represent the orientation
+	q_est = quad_times(quad_times(q_a, q_e), q_r);
+    euler = quad2euler(q_est);
+    q0 = q_est.q0;
+    q1 = q_est.q1;
+    q2 = q_est.q2;
+    q3 = q_est.q3;
+    Yaw = euler.yaw * 57.295780;
+	if(Yaw < 0)  {Yaw = Yaw + 360;}      //将Yaw的范围转成0-360
+	if(Yaw > 360){Yaw = Yaw - 360;} ;
+    Pitch = euler.pitch * 57.295780;
+    Roll = euler.roll * 57.295780;
+
 }
+
 void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz)
 {
 	float recipNorm;
@@ -362,7 +453,9 @@ Yaw=arctan2(2wz+2xy, 1-2yy-2zz);
 
 void Get_Attitude(void)
 {
-    MadgwickAHRSupdate(init_gx/57.29578, init_gy/57.29578, init_gz/57.29578, init_ax, init_ay, init_az, init_mx, init_my, init_mz);
+    //init_quaternion();
+    factored_quaternion(init_ax, init_ay, init_az, init_mx, init_my, init_mz);
+   // MadgwickAHRSupdate(init_gx/57.29578, init_gy/57.29578, init_gz/57.29578, init_ax, init_ay, init_az, init_mx, init_my, init_mz);
     //AHRSupdate(init_gx/57.29578, init_gy/57.29578, init_gz/57.29578, init_ax, init_ay, init_az, init_mx, init_my, init_mz);
 //    halfT=GET_NOWTIME();		//得到每次姿态更新的周期的一半
 //    printf("Time: %10.4f", halfT * 2);
@@ -513,20 +606,6 @@ float GET_NOWTIME(void)
 	temp = (float)now / 2000000.0f;          //换算成秒，再除以2得出采样周期的一半
 
 	return temp;
-}
-
-/*******************************************************************************
-快速计算 1/Sqrt(x)，源自雷神3的一段代码，神奇的0x5f3759df！比正常的代码快4倍 	
-*******************************************************************************/
-float invSqrt(float x) 
-{
-	float halfx = 0.5f * x;
-	float y = x;
-	long i = *(long*)&y;
-	i = 0x5f3759df - (i>>1);
-	y = *(float*)&i;
-	y = y * (1.5f - (halfx * y * y));
-	return y;
 }
 
 

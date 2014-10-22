@@ -1,6 +1,8 @@
 ﻿#过滤文件夹Output, Libraries,Listing
 *.[oa]
 *~
+Project/RVMDK（uv4）/*.*
+!Project/RVMDK（uv4）/*.uvproj
 User/.tags
 User/.tags_sorted_by_file
 Libraries/
