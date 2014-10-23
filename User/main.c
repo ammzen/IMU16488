@@ -98,7 +98,7 @@ int main(void)
             Com_10Hz = 0;
            // printf("%6.3f,  %6.3f,  %6.3f\r", Yaw, Pitch, Roll);
             //printf("status:%8.5f,%8.5f,%8.5f,%8.5f,yaw,pitch,roll:%8.3f,%8.3f,%8.3f\r",q0,q1,q2,q3,Yaw, Pitch, Roll); 
-            printf("四元数更新  status:%9.6f,%9.6f,%9.6f,%9.6f,yaw,pitch,roll:%8.3f,%8.3f,%8.3f\r",q0,q1,q2,q3,Yaw, Pitch, Roll); 
+            printf("status:%9.6f,%9.6f,%9.6f,%9.6f,yaw,pitch,roll:%8.3f,%8.3f,%8.3f\r",q0,q1,q2,q3,Yaw, Pitch, Roll); 
         }
 	}
 

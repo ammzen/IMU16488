@@ -16,6 +16,7 @@ typedef struct
 	float roll;
 }EulerAngle;
 
+Quaternion quad_init(float q0, float q1, float q2, float q3);
 /** 单位四元数的逆与它的共轭相等 **/
 Quaternion quad_invert(Quaternion a);
 Quaternion quad_times(Quaternion a, Quaternion b);

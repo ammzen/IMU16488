@@ -1,6 +1,16 @@
 #include "QuadLib.h"
 #include <math.h>
 
+Quaternion quad_init(float q0, float q1, float q2, float q3)
+{
+	Quaternion temp;
+	temp.q0 = q0;
+	temp.q1 = q1;
+	temp.q2 = q2;
+	temp.q3 = q3;
+	return temp;	
+}
+
 Quaternion quad_invert(Quaternion a)
 {
 	Quaternion temp;

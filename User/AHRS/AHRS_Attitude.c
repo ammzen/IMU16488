@@ -82,7 +82,7 @@ void init_quaternion()
 	init_Yaw   = init_Yaw * 57.295780;
 	if(init_Yaw < 0){init_Yaw = init_Yaw + 360;}      //将Yaw的范围转成0-360
 	if(init_Yaw > 360){init_Yaw = init_Yaw - 360;} 	    
-	printf("由初始化四元数得到:%9.6f,%9.6f,%9.6f,%9.6f,yaw,pitch,roll:%8.3f,%8.3f,%8.3f\n\r",q0,q1,q2,q3, init_Yaw, init_Pitch, init_Roll);
+	//printf("由初始化四元数得到:%9.6f,%9.6f,%9.6f,%9.6f,yaw,pitch,roll:%8.3f,%8.3f,%8.3f\n\r",q0,q1,q2,q3, init_Yaw, init_Pitch, init_Roll);
 //    Yaw = init_Yaw;
 //    Pitch = init_Pitch;
 //    Roll = init_Roll;
@@ -98,8 +98,11 @@ void factored_quaternion(float ax, float ay, float az, float mx, float my, float
 	// mag_b->magnetic field measurement vector in the body coordinate
 	// mag_e->rotate mag_b into intermediate Earth coordinate
 	// nx ny->the known local normalized magnetic field vector
-	Quaternion mag_b, mag_e;
+	Quaternion mag_b, mag_e, acc_g;
+	// Singularity Avoidance in Impletation
+	Quaternion q_est_alt, q_alpha, mag_b_offset, acc_g_offset;
 	float nx, ny, Nx, Ny, Mx, My;
+   	int cos_theta_tiny_tag = 0;
     EulerAngle euler;
 	
 	float recipNorm;
@@ -129,11 +132,21 @@ void factored_quaternion(float ax, float ay, float az, float mx, float my, float
 	q_e.q2 = sin_half_theta;
 	q_e.q3 = 0;
 
+	acc_g = quad_init(0, ax, ay, az);
+	q_alpha = quad_init(0.9848, 0 , 0.1736, 0);
+	acc_g_offset = quad_times(quad_times(q_alpha, acc_g), quad_invert(q_alpha));
+	mag_b_offset = quad_times(quad_times(q_alpha, mag_b), quad_invert(q_alpha));
+
 	// Roll Quaternion
-	if (cos_theta == 0)
+	if (cos_theta < 0.1)
 	{
 		sin_phi = 0;
 		cos_phi = 1;
+//		sin_theta = acc_g_offset.q1;
+//		cos_theta = sqrt(1 - sin_theta*sin_theta);
+//		sin_phi = -acc_g_offset.q2 / cos_theta;
+//		cos_phi = -acc_g_offset.q3 / cos_theta;
+//		cos_theta_tiny_tag = 1;
 	}
 	else
 	{
@@ -158,10 +171,10 @@ void factored_quaternion(float ax, float ay, float az, float mx, float my, float
 	recipNorm = invSqrt(mag_e.q1 * mag_e.q1 + mag_e.q2 * mag_e.q2);
 	Mx = mag_e.q1 * recipNorm; 
 	My = mag_e.q2 * recipNorm; 
-//	Nx = -0.1644;
-//	Ny =  0.9864;
-	Nx =  0;
-	Ny =  1;
+	Nx = -0.1556;
+	Ny =  0.9878;
+	// Nx =  0;
+	// Ny =  1;
 	cos_psi =  Mx * Nx + My * Ny;
 	sin_psi = -My * Nx + Mx * Ny;
 	sin_half_psi = (sin_psi >= 0 ? 1:-1) * sqrt(0.5 * (1 - cos_psi));
@@ -173,6 +186,10 @@ void factored_quaternion(float ax, float ay, float az, float mx, float my, float
 
 	// Three rotations represent the orientation
 	q_est = quad_times(quad_times(q_a, q_e), q_r);
+	if (cos_theta_tiny_tag)
+	{
+		q_est = quad_times(q_est, q_alpha);
+	}
     euler = quad2euler(q_est);
     q0 = q_est.q0;
     q1 = q_est.q1;
@@ -454,8 +471,8 @@ Yaw=arctan2(2wz+2xy, 1-2yy-2zz);
 void Get_Attitude(void)
 {
     //init_quaternion();
-    factored_quaternion(init_ax, init_ay, init_az, init_mx, init_my, init_mz);
-   // MadgwickAHRSupdate(init_gx/57.29578, init_gy/57.29578, init_gz/57.29578, init_ax, init_ay, init_az, init_mx, init_my, init_mz);
+//    factored_quaternion(init_ax, init_ay, init_az, init_mx, init_my, init_mz);
+    MadgwickAHRSupdate(init_gx/57.29578, init_gy/57.29578, init_gz/57.29578, init_ax, init_ay, init_az, init_mx, init_my, init_mz);
     //AHRSupdate(init_gx/57.29578, init_gy/57.29578, init_gz/57.29578, init_ax, init_ay, init_az, init_mx, init_my, init_mz);
 //    halfT=GET_NOWTIME();		//得到每次姿态更新的周期的一半
 //    printf("Time: %10.4f", halfT * 2);
