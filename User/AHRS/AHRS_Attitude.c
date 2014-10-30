@@ -3,6 +3,7 @@
 #include "bsp_usart1.h"
 #include "Kalman.h"
 #include "QuadLib.h"
+#include "bsp_led.h"
 #include <math.h>
 
 __IO uint16_t *p;
@@ -28,7 +29,19 @@ float MZgain = 1;
 float MXoffset = 0;
 float MYoffset = 0;
 float MZoffset = 0;
+
+typedef struct
+{
+	float AXoffset;
+	float AYoffset;
+	float AZoffset;
+	float Params[3][3]; 
+}AccCalibParams;
+
+AccCalibParams AccCalib;
+
 extern __IO float Pitch, Roll, Yaw;
+extern __IO int KEYDOWN;
 
 //---------------------------------------------------------------------------------------------------
 // Definitions
@@ -478,6 +491,30 @@ void Get_Attitude(void)
 //    printf("Time: %10.4f", halfT * 2);
 }
 
+/**
+ * 初始化各个传感器的校准系数
+ */
+void init_calibparams(void)
+{
+	AccCalib.AXoffset = 0;
+	AccCalib.AYoffset = 0;
+	AccCalib.AZoffset = 0;
+	AccCalib.Params[0][0] = 1;
+	AccCalib.Params[0][1] = 0;
+	AccCalib.Params[0][2] = 0;
+	AccCalib.Params[1][0] = 0;
+	AccCalib.Params[1][1] = 1;
+	AccCalib.Params[1][2] = 0;
+	AccCalib.Params[2][0] = 0;
+	AccCalib.Params[2][1] = 0;
+	AccCalib.Params[2][2] = 1;
+	/*
+	|S_ax   K_ax1  K_ax2|   K_ax1、K_ay1、K_az1 是安装误差系数
+	|K_ay1  S_ay   K_ay2|   S_ax、S_ay、S_az 是刻度因数
+	|K_az1  K_az2  S_az |	AXoffset、AYoffset、AZoffset 是零偏值
+	 */
+}
+
 void get_compass_bias(void)
 {
   Read_Mag();
@@ -534,7 +571,108 @@ void compass_calibration(void)
   printf(" \n\r  MXgain=%f, MYgain=%f, MZgain=%f, MXoffset=%f, MYoffset=%f, MZoffset=%f", 
           MXgain, MYgain, MZgain, MXoffset, MYoffset, MZoffset);         
 }
+/**
+ * 加速度计的误差校准
+ * 将传感器依次按照要求的6个姿态放置，采集相应的数据，计算加速度计的零偏及安装误差系数
+ */
+void get_acc_bias(void)
+{
+	float Ax[6], Ay[6], Az[6];
+	printf("\n\r即将进行加速度计校准程序，请按提示进行操作\n\r");
 
+	printf("\n\r将加速度计的X、Y、Z轴按照 东 天 南 放置，放置好后按2键采集数据\n\r");
+	while(!KEYDOWN)  //按键2按下则停止校准
+	{}
+	LED2_TOGGLE;
+    Delay_ms(1000);
+	p = SPI_READ_ACCL();
+	TRUEVALUE = CONVERT_ACCL(p);
+	Ax[0] = *(TRUEVALUE + 0);
+	Ay[0] = *(TRUEVALUE + 1);
+	Az[0] = *(TRUEVALUE + 2);
+	printf("\n\r将加速度计的X、Y、Z轴按照 东 北 天 放置，放置好后按2键采集数据\n\r");
+	KEYDOWN = 0;
+    while(!KEYDOWN)  //按键2按下则停止校准
+	{}
+	LED2_TOGGLE;
+    Delay_ms(1000);
+    p = SPI_READ_ACCL();
+	TRUEVALUE = CONVERT_ACCL(p);
+	Ax[1] = *(TRUEVALUE + 0);
+	Ay[1] = *(TRUEVALUE + 1);
+	Az[1] = *(TRUEVALUE + 2);
+	printf("\n\r将加速度计的X、Y、Z轴按照 地 东 南 放置，放置好后按2键采集数据\n\r");
+	KEYDOWN = 0;
+	while(!KEYDOWN)  //按键2按下则停止校准
+	{}
+	LED2_TOGGLE;
+    Delay_ms(1000);
+	p = SPI_READ_ACCL();
+	TRUEVALUE = CONVERT_ACCL(p);
+	Ax[2] = *(TRUEVALUE + 0);
+	Ay[2] = *(TRUEVALUE + 1);
+	Az[2] = *(TRUEVALUE + 2);
+	printf("\n\r将加速度计的X、Y、Z轴按照 西 地 南 放置，放置好后按2键采集数据\n\r");
+	KEYDOWN = 0;
+	while(!KEYDOWN)  //按键2按下则停止校准
+	{}
+	LED2_TOGGLE;
+    Delay_ms(1000);
+	p = SPI_READ_ACCL();
+	TRUEVALUE = CONVERT_ACCL(p);
+	Ax[3] = *(TRUEVALUE + 0);
+	Ay[3] = *(TRUEVALUE + 1);
+	Az[3] = *(TRUEVALUE + 2);
+	printf("\n\r将加速度计的X、Y、Z轴按照 天 西 南 放置，放置好后按2键采集数据\n\r");
+	KEYDOWN = 0;
+	while(!KEYDOWN)  //按键2按下则停止校准
+	{}
+	LED2_TOGGLE;
+    Delay_ms(1000);
+	p = SPI_READ_ACCL();
+	TRUEVALUE = CONVERT_ACCL(p);
+	Ax[4] = *(TRUEVALUE + 0);
+	Ay[4] = *(TRUEVALUE + 1);
+	Az[4] = *(TRUEVALUE + 2);
+	printf("\n\r将加速度计的X、Y、Z轴按照 南 西 地 放置，放置好后按2键采集数据\n\r");
+	KEYDOWN = 0;
+	while(!KEYDOWN)  //按键2按下则停止校准
+	{}
+	LED2_TOGGLE;
+    Delay_ms(1000);
+	p = SPI_READ_ACCL();
+	TRUEVALUE = CONVERT_ACCL(p);
+	Ax[5] = *(TRUEVALUE + 0);
+	Ay[5] = *(TRUEVALUE + 1);
+	Az[5] = *(TRUEVALUE + 2);
+
+	printf("\n\r加速度计校准完毕\n\r");
+	AccCalib.AXoffset = (Ax[0]+Ax[1]+Ax[3]+Ax[5]) / 4;
+	AccCalib.AYoffset = (Ay[1]+Ay[2]+Ay[4]+Ay[5]) / 4;
+	AccCalib.AZoffset = (Az[0]+Az[2]+Az[3]+Az[4]) / 4;
+	AccCalib.Params[0][0] = (Ax[2]-Ax[4]) / 2;
+	AccCalib.Params[0][1] = (Ax[3]-Ax[0]) / 2;
+	AccCalib.Params[0][2] = (Ax[5]-Ax[1]) / 2;
+	AccCalib.Params[1][0] = (Ay[2]-Ay[4]) / 2;
+	AccCalib.Params[1][1] = (Ay[3]-Ay[0]) / 2;
+	AccCalib.Params[1][2] = (Ay[5]-Ay[1]) / 2;
+	AccCalib.Params[2][0] = (Az[2]-Az[4]) / 2;
+	AccCalib.Params[2][1] = (Az[3]-Az[0]) / 2;
+	AccCalib.Params[2][2] = (Az[5]-Az[1]) / 2;
+	printf("\n\r校准矩阵如下：\n\r");
+	printf("%f    %f    %f\n\r%f    %f    %f\n\r%f    %f    %f\n\r",
+	AccCalib.Params[0][0], AccCalib.Params[0][1], AccCalib.Params[0][2], 
+	AccCalib.Params[1][0], AccCalib.Params[1][1], AccCalib.Params[1][2], 
+	AccCalib.Params[2][0], AccCalib.Params[2][1], AccCalib.Params[2][2]);
+	printf("\n\rAXoffset=%f, AYoffset=%f, AZoffset=%f\n\r", AccCalib.AXoffset, AccCalib.AYoffset, AccCalib.AZoffset);
+	/*
+	-0.996969    0.006343    -0.015940
+	-0.001398    -0.999080    -0.006122
+	-0.011063    0.015296    -0.998357
+	
+	AXoffset=-0.002932, AYoffset=-0.002300, AZoffset=-0.002448
+	 */
+}
 void gyro_calibration(void)
 {
   SPI_FLASH_CS_LOW();
@@ -574,6 +712,9 @@ void GetData(void)
 	init_ax = *(TRUEVALUE + 0);
 	init_ay = *(TRUEVALUE + 1);
 	init_az = *(TRUEVALUE + 2);
+	init_ax = AccCalib.AXoffset + AccCalib.Params[0][0] * init_ax + AccCalib.Params[0][1] * init_ay + AccCalib.Params[0][2] * init_az;
+	init_ay = AccCalib.AYoffset + AccCalib.Params[1][0] * init_ax + AccCalib.Params[1][1] * init_ay + AccCalib.Params[1][2] * init_az;
+	init_az = AccCalib.AZoffset + AccCalib.Params[2][0] * init_ax + AccCalib.Params[2][1] * init_ay + AccCalib.Params[2][2] * init_az;
 	p = SPI_READ_MAGN();
 	TRUEVALUE = CONVERT_MAGN(p);
 	init_mx = *(TRUEVALUE + 0) * MXgain + MXoffset;

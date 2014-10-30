@@ -8,8 +8,10 @@ void factored_quaternion(float ax, float ay, float az, float mx, float my, float
 void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz);
 void AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz);
 void Get_Attitude(void);
+void init_calibparams(void);
 void get_compass_bias(void);
 void compass_calibration(void);
+void get_acc_bias(void);
 void Read_Mag(void);
 void gyro_calibration(void);
 void GetData(void);

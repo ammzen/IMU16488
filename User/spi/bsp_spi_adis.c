@@ -60,7 +60,7 @@ void SPI_FLASH_Init(void)
   /*!< SPI_FLASH_SPI_CS_GPIO, SPI_FLASH_SPI_MOSI_GPIO, 
        SPI_FLASH_SPI_MISO_GPIO, SPI_FLASH_SPI_DETECT_GPIO 
        and SPI_FLASH_SPI_SCK_GPIO Periph clock enable */
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB, ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, ENABLE);
 
   /*!< SPI_FLASH_SPI Periph clock enable */
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE); 
