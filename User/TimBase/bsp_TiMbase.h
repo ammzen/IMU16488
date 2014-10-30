@@ -1,5 +1,5 @@
-#ifndef TIME_TEST_H
-#define TIME_TEST_H
+#ifndef __BSP_TIMBASE_H
+#define __BSP_TIMBASE_H
 
 #include "stm32f10x.h"
 

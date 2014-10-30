@@ -58,7 +58,9 @@ int main(void)
         }
     printf("\r\n     PROD_ID = 0x%X ", DeviceID);
     printf("\r\n     ADIS16488初始化成功\n\r");
+    init_calibparams();
     gyro_calibration();
+//    get_acc_bias();
 //    printf("\r\n     进行磁力计校准\n\r     LED2闪烁过程中将传感器绕空间8字转动，按下按键2则校准完毕");
 //    while(!KEYDOWN)  //按键2按下则停止校准
 //    {
@@ -98,6 +100,7 @@ int main(void)
             Com_10Hz = 0;
            // printf("%6.3f,  %6.3f,  %6.3f\r", Yaw, Pitch, Roll);
             //printf("status:%8.5f,%8.5f,%8.5f,%8.5f,yaw,pitch,roll:%8.3f,%8.3f,%8.3f\r",q0,q1,q2,q3,Yaw, Pitch, Roll); 
+            //printf("init_ax=%6.3f, init_ay=%6.3f, init_az=%6.3f\r",init_ax, init_ay, init_az);
             printf("status:%9.6f,%9.6f,%9.6f,%9.6f,yaw,pitch,roll:%8.3f,%8.3f,%8.3f\r",q0,q1,q2,q3,Yaw, Pitch, Roll); 
         }
 	}
