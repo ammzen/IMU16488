@@ -18,5 +18,19 @@ void GetData(void);
 void GetRawData(void);
 float GET_NOWTIME(void);
 
+void Get_Position();
+
+
+extern float init_gx;
+extern float init_gy;
+extern float init_gz;
+	
+extern float init_ax;
+extern float init_ay;
+extern float init_az;
+
+extern float vx,vy,vz,px,py,pz;
+
+
 
 #endif
