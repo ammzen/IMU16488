@@ -13,6 +13,7 @@ __IO float accel[3];
 __IO float mag[3];
 __IO float gyro[3];
 float q0, q1, q2, q3;
+float vx,vy,vz,px,py,pz;
 float exInt = 0, eyInt = 0, ezInt = 0;        // scaled integral error
 float halfT;
 float init_ax, init_ay, init_az, init_gx, init_gy, init_gz, init_mx, init_my, init_mz;
@@ -54,7 +55,7 @@ extern __IO int KEYDOWN;
 //---------------------------------------------------------------------------------------------------
 // Variable definitions
 
-volatile float beta = betaDef;								// 2 * proportional gain (Kp)
+volatile float beta = 0.1;								// 2 * proportional gain (Kp)
 
 void init_quaternion()
 {
@@ -81,21 +82,21 @@ void init_quaternion()
     init_Yaw  = -atan2(init_my*cos(init_Pitch) - init_mz*sin(init_Pitch),
                        init_mx*cos(init_Roll) + init_my*sin(init_Roll)*sin(init_Pitch) + init_mz*sin(init_Roll)*cos(init_Pitch));//MadgwickAHRS类似于atan2(my, mx)，其中的init_Roll和init_Pitch是弧度				            
 	//将初始化欧拉角转换成初始化四元数，注意sin(a)的位置的不同，可以确定绕xyz轴转动是Pitch还是Roll还是Yaw，按照ZXY顺序旋转,Qzyx=Qz*Qy*Qx，其中的init_YawRollPtich是角度        
-//	q0 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*cos(0.5*init_Yaw) - sin(0.5*init_Roll)*sin(0.5*init_Pitch)*sin(0.5*init_Yaw);  //w
-//	q1 = cos(0.5*init_Roll)*sin(0.5*init_Pitch)*cos(0.5*init_Yaw) - sin(0.5*init_Roll)*cos(0.5*init_Pitch)*sin(0.5*init_Yaw);  //x   绕x轴旋转是pitch
-//	q2 = sin(0.5*init_Roll)*cos(0.5*init_Pitch)*cos(0.5*init_Yaw) + cos(0.5*init_Roll)*sin(0.5*init_Pitch)*sin(0.5*init_Yaw);  //y   绕y轴旋转是roll
-//	q3 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*sin(0.5*init_Yaw) + sin(0.5*init_Roll)*sin(0.5*init_Pitch)*cos(0.5*init_Yaw);  //z   绕z轴旋转是Yaw
-	q0 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*cos(0.5*init_Yaw) + sin(0.5*init_Roll)*sin(0.5*init_Pitch)*sin(0.5*init_Yaw);  //w
-	q1 = sin(0.5*init_Roll)*cos(0.5*init_Pitch)*cos(0.5*init_Yaw) - cos(0.5*init_Roll)*sin(0.5*init_Pitch)*sin(0.5*init_Yaw);  //x   绕x轴旋转是pitch
-	q2 = cos(0.5*init_Roll)*sin(0.5*init_Pitch)*cos(0.5*init_Yaw) + sin(0.5*init_Roll)*cos(0.5*init_Pitch)*sin(0.5*init_Yaw);  //y   绕y轴旋转是roll
-	q3 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*sin(0.5*init_Yaw) - sin(0.5*init_Roll)*sin(0.5*init_Pitch)*cos(0.5*init_Yaw);  //z   绕z轴旋转是Yaw
+	q0 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*cos(0.5*init_Yaw) - sin(0.5*init_Roll)*sin(0.5*init_Pitch)*sin(0.5*init_Yaw);  //w
+	q1 = cos(0.5*init_Roll)*sin(0.5*init_Pitch)*cos(0.5*init_Yaw) - sin(0.5*init_Roll)*cos(0.5*init_Pitch)*sin(0.5*init_Yaw);  //x   绕x轴旋转是pitch
+	q2 = sin(0.5*init_Roll)*cos(0.5*init_Pitch)*cos(0.5*init_Yaw) + cos(0.5*init_Roll)*sin(0.5*init_Pitch)*sin(0.5*init_Yaw);  //y   绕y轴旋转是roll
+	q3 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*sin(0.5*init_Yaw) + sin(0.5*init_Roll)*sin(0.5*init_Pitch)*cos(0.5*init_Yaw);  //z   绕z轴旋转是Yaw
+//	q0 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*cos(0.5*init_Yaw) + sin(0.5*init_Roll)*sin(0.5*init_Pitch)*sin(0.5*init_Yaw);  //w
+//	q1 = sin(0.5*init_Roll)*cos(0.5*init_Pitch)*cos(0.5*init_Yaw) - cos(0.5*init_Roll)*sin(0.5*init_Pitch)*sin(0.5*init_Yaw);  //x   绕x轴旋转是pitch
+//	q2 = cos(0.5*init_Roll)*sin(0.5*init_Pitch)*cos(0.5*init_Yaw) + sin(0.5*init_Roll)*cos(0.5*init_Pitch)*sin(0.5*init_Yaw);  //y   绕y轴旋转是roll
+//	q3 = cos(0.5*init_Roll)*cos(0.5*init_Pitch)*sin(0.5*init_Yaw) - sin(0.5*init_Roll)*sin(0.5*init_Pitch)*cos(0.5*init_Yaw);  //z   绕z轴旋转是Yaw
 
 	init_Roll  = init_Roll * 57.295780;	 //弧度转角度
 	init_Pitch = init_Pitch * 57.295780;
 	init_Yaw   = init_Yaw * 57.295780;
 	if(init_Yaw < 0){init_Yaw = init_Yaw + 360;}      //将Yaw的范围转成0-360
 	if(init_Yaw > 360){init_Yaw = init_Yaw - 360;} 	    
-	//printf("由初始化四元数得到:%9.6f,%9.6f,%9.6f,%9.6f,yaw,pitch,roll:%8.3f,%8.3f,%8.3f\n\r",q0,q1,q2,q3, init_Yaw, init_Pitch, init_Roll);
+	printf("由初始化四元数得到:%9.6f,%9.6f,%9.6f,%9.6f,yaw,pitch,roll:%8.3f,%8.3f,%8.3f\n\r",q0,q1,q2,q3, init_Yaw, init_Pitch, init_Roll);
 //    Yaw = init_Yaw;
 //    Pitch = init_Pitch;
 //    Roll = init_Roll;
@@ -223,6 +224,7 @@ void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float 
 	float qDot1, qDot2, qDot3, qDot4;
 	float hx, hy;
 	float _2q0mx, _2q0my, _2q0mz, _2q1mx, _2bx, _2bz, _4bx, _4bz, _2q0, _2q1, _2q2, _2q3, _2q0q2, _2q2q3, q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;
+//    printf("aX=%7.2f,aY=%7.2f,aZ=%7.2f,mX=%7.2f,mY=%7.2f,mZ=%7.2f,gX=%7.2f,gY=%7.2f,gZ=%7.2f\r\n",ax, ay, az, mx, my, mz, gx, gy, gz);
 
 	// Rate of change of quaternion from gyroscope
 	qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
@@ -325,6 +327,7 @@ void MadgwickAHRSupdate(float gx, float gy, float gz, float ax, float ay, float 
 	Pitch = asin(2*q2*q3 + 2*q0*q1) * 57.295780; //俯仰角，绕x轴转动	 
     Roll  = -atan2(-2*q0*q2 + 2*q1*q3, -2 * q1 * q1 - 2 * q2* q2 + 1) * 57.295780; //滚动角，绕y轴转动
     
+
 	//printf("四元数收敛过程：Yaw=%f, Pitch=%f, Roll=%f \n\r", Yaw, Pitch, Roll);
 }
 
@@ -720,6 +723,9 @@ void GetData(void)
 	init_mx = *(TRUEVALUE + 0) * MXgain + MXoffset;
 	init_my = *(TRUEVALUE + 1) * MYgain + MYoffset;
 	init_mz = *(TRUEVALUE + 2) * MZgain + MZoffset;
+//    init_mx = 0;
+//	init_my = 0;
+//	init_mz = 0;
 }
 void GetRawData()
 {
@@ -765,5 +771,33 @@ float GET_NOWTIME(void)
 
 	return temp;
 }
+
+//计算位移及速度
+void Get_Position()
+{
+    float acc_sum;
+    Quaternion acc_sensor, acc_geo, attitude;
+    acc_sensor = quad_init(0, init_ax, init_ay, init_az);
+    attitude = quad_init(q0, q1, q2, q3);
+	acc_geo = quad_times(quad_times(attitude, acc_sensor), quad_invert(attitude));
+    acc_sum = sqrt(init_ax*init_ax+init_ay*init_ay+init_az*init_az);
+    if (acc_sum > 1.001 || acc_sum < 0.999)
+    {
+        vx += acc_geo.q1*9.8*halfT*2;
+        vy += acc_geo.q2*9.8*halfT*2;
+        px += vx*halfT*2;
+        py += vy*halfT*2;
+    }
+    else
+    {
+        vx = vy = 0;
+    }
+//                printf("Vx=%8.2f  Vy=%8.2f  Px=%9.4f  Py=%9.4f\r\n",
+//            vx*100,vy*100,px*100,py*100);
+
+//    printf("acc_geo.q0=%8.2f, acc_geo.q1=%8.2f, acc_geo.q2=%8.2f, acc_geo.q3=%8.2f, sum=%f\r\n",
+//           acc_geo.q0, acc_geo.q1*9.8, acc_geo.q2*9.8, acc_geo.q3*9.8,sqrt(init_ax*init_ax+init_ay*init_ay+init_az*init_az));
+}
+
 
 
